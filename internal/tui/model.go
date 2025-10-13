@@ -22,28 +22,23 @@ const (
 type Model struct {
 	step step
 
-	// Inputs
 	nameInput  textinput.Model
 	emailInput textinput.Model
 	phoneInput textinput.Model
 
-	// Menu
 	menuRoot   domain.MenuNode
-	menuStack  []int // Index je Ebene
-	menuCursor int   // aktueller Index auf aktueller Ebene
+	menuStack  []int
+	menuCursor int
 	path       []string
 
-	// Availability
 	mode     domain.AvailabilityKind
 	dateISO  string
 	weekday  string
 	fromHour int
 	toHour   int
 
-	// Ergebnis
 	result *domain.BookingRequest
 
-	// Misc
 	errMsg string
 	cfg    config.Config
 }
@@ -57,23 +52,20 @@ func NewModel(root domain.MenuNode, cfg config.Config) Model {
 	return m
 }
 
-func (m Model) Init() tea.Cmd {
-	// optional: Fokus erstes Feld setzen
-	return nil
-}
+func (m Model) Init() tea.Cmd { return nil }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.step {
 	case stepPerson:
 		return updatePerson(m, msg)
 	case stepMenu:
-		return updateMenu(m, msg)
+		return updateMenu(m, msg) // stub
 	case stepAvailabilityMode:
-		return updateAvailMode(m, msg)
+		return updateAvailMode(m, msg) // stub
 	case stepAvailabilityDetail:
-		return updateAvailDetail(m, msg)
+		return updateAvailDetail(m, msg) // stub
 	case stepReview:
-		return updateReview(m, msg)
+		return updateReview(m, msg) // stub
 	case stepDone:
 		return m, tea.Quit
 	default:
@@ -81,15 +73,34 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func updatePerson(m Model, msg tea.Msg) (tea.Model, tea. Cmd) {
-	switch msg := msg.(type) {
+func (m Model) View() string {
+	switch m.step {
+	case stepPerson:
+		return viewPerson(m)
+	case stepMenu:
+		return viewMenu(m)
+	case stepAvailabilityMode:
+		return viewAvailMode(m)
+	case stepAvailabilityDetail:
+		return viewAvailDetail(m)
+	case stepReview:
+		return viewReview(m)
+	case stepDone:
+		return "fertig\n"
+	default:
+		return ""
+	}
+}
+
+func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch k := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
+		switch k.String() {
 		case "enter":
 			if m.nameInput.Focused() {
 				if err := validateName(m.nameInput.Value()); err != nil {
 					m.errMsg = err.Error()
-					return m , nil
+					return m, nil
 				}
 				m.errMsg = ""
 				m.nameInput.Blur()
@@ -113,51 +124,31 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea. Cmd) {
 				}
 				m.errMsg = ""
 				m.result = &domain.BookingRequest{
-					Name: m.nameInput.Value(),
+					Name:  m.nameInput.Value(),
 					Email: m.emailInput.Value(),
 					Phone: m.phoneInput.Value(),
-					TZ: m.cfg.TZ,
+					TZ:    m.cfg.TZ,
 				}
 				m.step = stepDone
-				return m, tea.Quit()
+				return m, tea.Quit
 			}
-		case "ctrl+c", "esc":
-			return m, tea.Quit()
+		case "esc", "ctrl+c":
+			return m, tea.Quit
+		}
 	}
-
 	var cmd tea.Cmd
-		if m.nameInput.Focused() {
-			m.nameInput, cmd = m.nameInput.Update(msg)
-			return m, cmd
-		}
-		if m.emailInput.Focused() {
-			m.emailInput, cmd = m.emailInput.Update(msg)
-			return m, cmd
-		}
-		m.phoneInput, cmd = m.phoneInput.Update(msg)
+	if m.nameInput.Focused() {
+		m.nameInput, cmd = m.nameInput.Update(msg)
 		return m, cmd
-}
-
-func (m Model) View() string {
-	switch m.step {
-	case stepPerson:
-		return viewPerson(m)
-	case stepMenu:
-		return viewMenu(m)
-	case stepAvailabilityMode:
-		return viewAvailMode(m)
-	case stepAvailabilityDetail:
-		return viewAvailDetail(m)
-	case stepReview:
-		return viewReview(m)
-	case stepDone:
-		return "fertig\n"
-	default:
-		return ""
 	}
+	if m.emailInput.Focused() {
+		m.emailInput, cmd = m.emailInput.Update(msg)
+		return m, cmd
+	}
+	m.phoneInput, cmd = m.phoneInput.Update(msg)
+	return m, cmd
 }
 
-// --- TEMP: No-ops bis wir diese Steps bauen ---
 func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd)        { return m, nil }
 func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd)   { return m, nil }
 func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
