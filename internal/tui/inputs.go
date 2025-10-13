@@ -24,6 +24,25 @@ func initInputs(m *Model) {
 	m.phoneInput.Width = 40
 }
 
+func focusName(m *Model) {
+	m.nameInput.Focus()
+	m.emailInput.Blur()
+	m.phoneInput.Blur()
+}
+
+func focusEmail(m *Model) {
+	m.nameInput.Blur()
+	m.emailInput.Focus()
+	m.phoneInput.Blur()
+}
+
+func focusPhone(m *Model) {
+	m.nameInput.Blur()
+	m.emailInput.Focus()
+	m.emailInput.Blur()
+	m.phoneInput.Focus()
+}
+
 func validateName(s string) error {
 	if len(strings.TrimSpace(s)) < 2 {
 		return errInvalid("Name zu kurz")

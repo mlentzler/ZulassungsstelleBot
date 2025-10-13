@@ -134,6 +134,46 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "esc", "ctrl+c":
 			return m, tea.Quit
+		case "tab":
+			if m.nameInput.Focused() {
+				focusEmail(&m)
+				return m, nil
+			}
+			if m.emailInput.Focused() {
+				focusPhone(&m)
+				return m, nil
+			}
+			focusName(&m)
+			return m, nil
+		case "shift+tab":
+			if m.phoneInput.Focused() {
+				focusEmail(&m)
+				return m, nil
+			}
+			if m.emailInput.Focused() {
+				focusName(&m)
+				return m, nil
+			}
+			focusPhone(&m)
+			return m, nil
+		case "up":
+			if m.emailInput.Focused() {
+				focusName(&m)
+				return m, nil
+			}
+			if m.phoneInput.Focused() {
+				focusEmail(&m)
+				return m, nil
+			}
+		case "down":
+			if m.nameInput.Focused() {
+				focusEmail(&m)
+				return m, nil
+			}
+			if m.emailInput.Focused() {
+				focusPhone(&m)
+				return m, nil
+			}
 		}
 	}
 	var cmd tea.Cmd
