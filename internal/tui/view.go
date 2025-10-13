@@ -1,5 +1,10 @@
 package tui
 
+import (
+	"fmt"
+	"strings"
+)
+
 func viewPerson(m Model) string {
 	var s string
 	s += "📝 Persönliche Daten\n\n"
@@ -13,12 +18,36 @@ func viewPerson(m Model) string {
 	return s
 }
 
-/*
 func viewMenu(m Model) string {
 	// TODO: breadcrumb + Liste aktuelle Ebene + footer
-	return ""
+	var b strings.Builder
+	b.WriteString("📂 Auswahl-Menü\n")
+	b.WriteString(breadcrumb(&m) + "\n\n")
+
+	nodes := currentLevelNodes(&m)
+	if len(nodes) == 0 {
+		b.WriteString("(Keine Einträge auf dieser Ebene)\n\n")
+		b.WriteString("↑/↓: bewegen · Enter: wählen · Backspace: zurück · Ctrl+C: beenden\n")
+		return b.String()
+	}
+
+	for i, n := range nodes {
+		cursor := "  "
+		if i == m.menuCursor {
+			cursor = "➤ "
+		}
+		leaf := " ⤷"
+		if len(n.Children) > 0 {
+			leaf = " ▸"
+		}
+		fmt.Fprintf(&b, "%s%s%s\n", cursor, n.Title, leaf)
+	}
+
+	b.WriteString("\n↑/↓: bewegen · Enter: wählen · Backspace: zurück · Ctrl+C: beenden\n")
+	return b.String()
 }
 
+/*
 func viewAvailMode(m Model) string {
 	// TODO: radio-like Auswahl (Einmalig/Wöchentlich)
 	return ""
@@ -35,7 +64,6 @@ func viewReview(m Model) string {
 }:
 */
 
-func viewMenu(m Model) string        { return "Menü (kommt später)\n" }
 func viewAvailMode(m Model) string   { return "Verfügbarkeitsmodus (kommt später)\n" }
 func viewAvailDetail(m Model) string { return "Verfügbarkeitsdetails (kommen später)\n" }
 func viewReview(m Model) string      { return "Review (kommt später)\n" }
