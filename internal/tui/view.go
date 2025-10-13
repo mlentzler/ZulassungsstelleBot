@@ -27,7 +27,7 @@ func viewMenu(m Model) string {
 	nodes := currentLevelNodes(&m)
 	if len(nodes) == 0 {
 		b.WriteString("(Keine Einträge auf dieser Ebene)\n\n")
-		b.WriteString("↑/↓: bewegen · Enter: wählen · Backspace: zurück · Ctrl+C: beenden\n")
+		b.WriteString("↑/↓: bewegen · Enter: wählen · Backspace: zurück · Esc/Ctrl+C: beenden\n")
 		return b.String()
 	}
 
