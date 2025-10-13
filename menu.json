@@ -1,0 +1,322 @@
+{
+  "title": "Start",
+  "selector": null,
+  "path": [],
+  "children": [
+    {
+      "title": "KFZ-Zulassung",
+      "selector": "//*[normalize-space(.)='KFZ-Zulassung']",
+      "path": ["//*[normalize-space(.)='KFZ-Zulassung']"],
+      "children": [
+        {
+          "title": "Fahrzeug zulassen / ummelden",
+          "selector": "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+          "path": [
+            "//*[normalize-space(.)='KFZ-Zulassung']",
+            "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']"
+          ],
+          "children": [
+            {
+              "title": "Fabrikneues Fahrzeug",
+              "selector": "//*[normalize-space(.)='Fabrikneues Fahrzeug']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                "//*[normalize-space(.)='Fabrikneues Fahrzeug']"
+              ],
+              "children": [
+                {
+                  "title": "\"Normale\" Zulassung",
+                  "selector": "//*[normalize-space(.)='\"Normale\" Zulassung' or normalize-space(.)='„Normale“ Zulassung']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Fabrikneues Fahrzeug']",
+                    "//*[normalize-space(.)='\"Normale\" Zulassung' or normalize-space(.)='„Normale“ Zulassung']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "Importfahrzeug",
+                  "selector": "//*[normalize-space(.)='Importfahrzeug']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Fabrikneues Fahrzeug']",
+                    "//*[normalize-space(.)='Importfahrzeug']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "Zulassung mit Einzelgenehmigung nach §13 EG-FGV",
+                  "selector": "//*[normalize-space(.)='Zulassung mit Einzelgenehmigung nach §13 EG-FGV']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Fabrikneues Fahrzeug']",
+                    "//*[normalize-space(.)='Zulassung mit Einzelgenehmigung nach §13 EG-FGV']"
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "Gebrauchtfahrzeug",
+              "selector": "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                "//*[normalize-space(.)='Gebrauchtfahrzeug']"
+              ],
+              "children": [
+                {
+                  "title": "Wiederzulassung auf den vorherigen Halter",
+                  "selector": "//*[normalize-space(.)='Wiederzulassung auf den vorherigen Halter']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+                    "//*[normalize-space(.)='Wiederzulassung auf den vorherigen Halter']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "Zulassung auf einen neuen Halter",
+                  "selector": "//*[normalize-space(.)='Zulassung auf einen neuen Halter']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+                    "//*[normalize-space(.)='Zulassung auf einen neuen Halter']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "Import Gebrauchtfahrzeug",
+                  "selector": "//*[normalize-space(.)='Import Gebrauchtfahrzeug']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                    "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+                    "//*[normalize-space(.)='Import Gebrauchtfahrzeug']"
+                  ],
+                  "children": [
+                    {
+                      "title": "EU-Import",
+                      "selector": "//*[normalize-space(.)='EU-Import']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                        "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+                        "//*[normalize-space(.)='Import Gebrauchtfahrzeug']",
+                        "//*[normalize-space(.)='EU-Import']"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "title": "US-Import & anderes Drittland",
+                      "selector": "//*[normalize-space(.)='US-Import & anderes Drittland' or normalize-space(.)='US-Import &\u00A0anderes Drittland']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                        "//*[normalize-space(.)='Gebrauchtfahrzeug']",
+                        "//*[normalize-space(.)='Import Gebrauchtfahrzeug']",
+                        "//*[normalize-space(.)='US-Import & anderes Drittland' or normalize-space(.)='US-Import &\u00A0anderes Drittland']"
+                      ],
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Historisches Fahrzeug (H-Kennzeichen)",
+              "selector": "//*[normalize-space(.)='Historisches Fahrzeug (H-Kennzeichen)']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                "//*[normalize-space(.)='Historisches Fahrzeug (H-Kennzeichen)']"
+              ],
+              "children": []
+            },
+            {
+              "title": "Import historisches Fahrzeug (H-Kennzeichen)",
+              "selector": "//*[normalize-space(.)='Import historisches Fahrzeug (H-Kennzeichen)']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Fahrzeug zulassen / ummelden']",
+                "//*[normalize-space(.)='Import historisches Fahrzeug (H-Kennzeichen)']"
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "Änderung von Halterdaten (Umzug, Heirat)",
+          "selector": "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+          "path": [
+            "//*[normalize-space(.)='KFZ-Zulassung']",
+            "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]"
+          ],
+          "children": [
+            {
+              "title": "Fahrzeug ist im Kreis Pinneberg zugelassen",
+              "selector": "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']"
+              ],
+              "children": [
+                {
+                  "title": "Adresse",
+                  "selector": "//*[normalize-space(.)='Adresse']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='Adresse']"
+                  ],
+                  "children": [
+                    {
+                      "title": "bis 2 Änderungen",
+                      "selector": "//*[normalize-space(.)='bis 2 Änderungen']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                        "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                        "//*[normalize-space(.)='Adresse']",
+                        "//*[normalize-space(.)='bis 2 Änderungen']"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "title": "bis 4 Änderungen",
+                      "selector": "//*[normalize-space(.)='bis 4 Änderungen']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                        "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                        "//*[normalize-space(.)='Adresse']",
+                        "//*[normalize-space(.)='bis 4 Änderungen']"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "title": "bis 6 Änderungen",
+                      "selector": "//*[normalize-space(.)='bis 6 Änderungen']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                        "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                        "//*[normalize-space(.)='Adresse']",
+                        "//*[normalize-space(.)='bis 6 Änderungen']"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "title": "bis 8 Änderungen",
+                      "selector": "//*[normalize-space(.)='bis 8 Änderungen']",
+                      "path": [
+                        "//*[normalize-space(.)='KFZ-Zulassung']",
+                        "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                        "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                        "//*[normalize-space(.)='Adresse']",
+                        "//*[normalize-space(.)='bis 8 Änderungen']"
+                      ],
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "title": "Name",
+                  "selector": "//*[normalize-space(.)='Name']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='Name']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "Name und Adresse",
+                  "selector": "//*[normalize-space(.)='Name und Adresse']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='Name und Adresse']"
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "Fahrzeug ist nicht im Kreis Pinneberg zugelassen",
+              "selector": "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']",
+              "path": [
+                "//*[normalize-space(.)='KFZ-Zulassung']",
+                "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']"
+              ],
+              "children": [
+                {
+                  "title": "bis 2 Änderungen",
+                  "selector": "//*[normalize-space(.)='bis 2 Änderungen']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='bis 2 Änderungen']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "bis 4 Änderungen",
+                  "selector": "//*[normalize-space(.)='bis 4 Änderungen']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='bis 4 Änderungen']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "bis 6 Änderungen",
+                  "selector": "//*[normalize-space(.)='bis 6 Änderungen']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='bis 6 Änderungen']"
+                  ],
+                  "children": []
+                },
+                {
+                  "title": "bis 8 Änderungen",
+                  "selector": "//*[normalize-space(.)='bis 8 Änderungen']",
+                  "path": [
+                    "//*[normalize-space(.)='KFZ-Zulassung']",
+                    "//*[normalize-space(.)='Änderung von Halterdaten' or contains(normalize-space(.),'Halterdaten')]",
+                    "//*[normalize-space(.)='Fahrzeug ist nicht im Kreis Pinneberg zugelassen']",
+                    "//*[normalize-space(.)='bis 8 Änderungen']"
+                  ],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Führerscheinangelegenheiten",
+      "selector": "//*[normalize-space(.)='Führerscheinangelegenheiten']",
+      "path": ["//*[normalize-space(.)='Führerscheinangelegenheiten']"],
+      "children": []
+    }
+  ]
+}
+
