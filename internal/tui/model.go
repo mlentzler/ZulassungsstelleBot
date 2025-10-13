@@ -123,14 +123,8 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.errMsg = ""
-				m.result = &domain.BookingRequest{
-					Name:  m.nameInput.Value(),
-					Email: m.emailInput.Value(),
-					Phone: m.phoneInput.Value(),
-					TZ:    m.cfg.TZ,
-				}
-				m.step = stepDone
-				return m, tea.Quit
+				m.step = stepMenu
+				return m, nil
 			}
 		case "esc", "ctrl+c":
 			return m, tea.Quit
@@ -189,7 +183,44 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd)        { return m, nil }
+func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
+	nodes := currentLevelNodes(&m)
+
+	switch k := msg.(type) {
+	case tea.KeyMsg:
+		switch k.String() {
+		case "up", "k":
+			if m.menuCursor > 0 {
+				m.menuCursor--
+			}
+			return m, nil
+		case "down", "j":
+			if len(nodes) > 0 && m.menuCursor < len(nodes)-1 {
+				m.menuCursor++
+			}
+			return m, nil
+		case "enter":
+			if len(nodes) == 0 {
+				return m, nil
+			}
+			n := nodes[m.menuCursor]
+			if len(n.Children) > 0 {
+				pushMenu(&m, m.menuCursor)
+				return m, nil
+			}
+			m.path = append(currentPathTitles(&m), n.Title)
+			m.step = stepAvailabilityMode
+			return m, nil
+		case "backspace", "h":
+			popMenu(&m)
+			return m, nil
+		case "esc", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
 func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd)   { return m, nil }
 func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
 func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd)      { return m, nil }
