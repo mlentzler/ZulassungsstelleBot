@@ -81,6 +81,63 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
+func updatePerson(m Model, msg tea.Msg) (tea.Model, tea. Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "enter":
+			if m.nameInput.Focused() {
+				if err := validateName(m.nameInput.Value()); err != nil {
+					m.errMsg = err.Error()
+					return m , nil
+				}
+				m.errMsg = ""
+				m.nameInput.Blur()
+				m.emailInput.Focus()
+				return m, nil
+			}
+			if m.emailInput.Focused() {
+				if err := validateEmail(m.emailInput.Value()); err != nil {
+					m.errMsg = err.Error()
+					return m, nil
+				}
+				m.errMsg = ""
+				m.emailInput.Blur()
+				m.phoneInput.Focus()
+				return m, nil
+			}
+			if m.phoneInput.Focused() {
+				if err := validatePhone(m.phoneInput.Value()); err != nil {
+					m.errMsg = err.Error()
+					return m, nil
+				}
+				m.errMsg = ""
+				m.result = &domain.BookingRequest{
+					Name: m.nameInput.Value(),
+					Email: m.emailInput.Value(),
+					Phone: m.phoneInput.Value(),
+					TZ: m.cfg.TZ,
+				}
+				m.step = stepDone
+				return m, tea.Quit()
+			}
+		case "ctrl+c", "esc":
+			return m, tea.Quit()
+	}
+
+	var cmd tea.Cmd
+		if m.nameInput.Focused() {
+			m.nameInput, cmd = m.nameInput.Update(msg)
+			return m, cmd
+		}
+		if m.emailInput.Focused() {
+			m.emailInput, cmd = m.emailInput.Update(msg)
+			return m, cmd
+		}
+		m.phoneInput, cmd = m.phoneInput.Update(msg)
+		return m, cmd
+}
+
 func (m Model) View() string {
 	switch m.step {
 	case stepPerson:
@@ -99,3 +156,9 @@ func (m Model) View() string {
 		return ""
 	}
 }
+
+// --- TEMP: No-ops bis wir diese Steps bauen ---
+func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd)        { return m, nil }
+func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd)   { return m, nil }
+func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
+func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd)      { return m, nil }
