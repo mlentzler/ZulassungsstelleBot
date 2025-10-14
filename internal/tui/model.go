@@ -250,7 +250,7 @@ func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.availCursor++
 			}
 			return m, nil
-		case "enter":
+		case "enter", "l":
 			if m.availCursor == 0 {
 				m.mode = domain.AvailOneOff
 				m.detailFocus = 0
@@ -329,7 +329,7 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		//Confirm
-		case "enter":
+		case "enter", "l":
 			var err error
 			if m.mode == domain.AvailOneOff {
 				if _, err = validateDateISO(m.dateInput.Value()); err != nil {
@@ -381,7 +381,7 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.step = stepReview
 			return m, nil
 
-		case "right", "h":
+		case "h":
 			m.step = stepAvailabilityMode
 			return m, nil
 

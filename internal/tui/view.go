@@ -16,7 +16,7 @@ func viewPerson(m Model) string {
 	if m.errMsg != "" {
 		s += "⚠️  " + m.errMsg + "\n\n"
 	}
-	s += "Enter: weiter · Esc/Ctrl+C: abbrechen\n"
+	s += "Enter: weiter · Esc: abbrechen\n"
 	return s
 }
 
@@ -28,7 +28,7 @@ func viewMenu(m Model) string {
 	nodes := currentLevelNodes(&m)
 	if len(nodes) == 0 {
 		b.WriteString("(Keine Einträge auf dieser Ebene)\n\n")
-		b.WriteString("↑/↓: bewegen · Enter: wählen · Backspace: zurück · Esc/Ctrl+C: beenden\n")
+		b.WriteString("↑/↓: bewegen · Enter/L: wählen · H: zurück · Esc: beenden\n")
 		return b.String()
 	}
 
@@ -44,7 +44,7 @@ func viewMenu(m Model) string {
 		fmt.Fprintf(&b, "%s%s%s\n", cursor, n.Title, leaf)
 	}
 
-	b.WriteString("\n↑/↓: bewegen · Enter: wählen · Backspace: zurück · Esc/Ctrl+C: beenden\n")
+	b.WriteString("\n↑/↓: bewegen · Enter/L: wählen · H: zurück · Esc: beenden\n")
 	return b.String()
 }
 
@@ -58,7 +58,7 @@ func viewAvailMode(m Model) string {
 	}
 	s := "⏱️  Verfügbarkeitsmodus wählen\n\n"
 	s += o1 + "\n" + o2 + "\n\n"
-	s += "←/→ oder ↑/↓: wählen · Enter: weiter · Backspace: zurück · Esc/Ctrl+C: beenden\n"
+	s += "←/→ oder ↑/↓: wählen · Enter/L: weiter · H: zurück · Esc: beenden\n"
 	return s
 }
 
@@ -76,13 +76,13 @@ func viewAvailDetail(m Model) string {
 		}
 
 		s := "📅 Einmaliger Termin\n\n"
-		s += f0 + "Datum (YYYY-MM-DD): " + m.dateInput.View() + "\n\n"
+		s += f0 + "Datum (DD.MM.YYYY): " + m.dateInput.View() + "\n\n"
 		s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
 		s += f2 + "To Stunde (1-24):   " + m.toInput.View() + "\n\n"
 		if m.errMsg != "" {
 			s += "⚠️  " + m.errMsg + "\n\n"
 		}
-		s += "Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · Backspace: zurück · Esc/Ctrl+C: beenden\n"
+		s += "Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · H: zurück · Esc: beenden\n"
 		return s
 	}
 
@@ -117,7 +117,7 @@ func viewAvailDetail(m Model) string {
 	if m.errMsg != "" {
 		s += "⚠️  " + m.errMsg + "\n\n"
 	}
-	s += "↑/↓: Wochentag (wenn markiert) · Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · Ctrl+Backspace: zurück · Esc/Ctrl+C: beenden\n"
+	s += "↑/↓: Wochentag (wenn markiert) · Tab: Feld wechseln · Enter: weiter · H: zurück · Esc: beenden\n"
 	return s
 }
 
