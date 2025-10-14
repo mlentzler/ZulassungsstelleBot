@@ -31,11 +31,21 @@ type Model struct {
 	menuCursor int
 	path       []string
 
-	mode     domain.AvailabilityKind
-	dateISO  string
-	weekday  string
-	fromHour int
-	toHour   int
+	mode        domain.AvailabilityKind
+	availCursor int
+
+	detailFocus int
+
+	dateISO   string
+	dateInput textinput.Model
+
+	weekday       string
+	weekdayCorsor int
+
+	fromHour  int
+	toHour    int
+	fromInput textinput.Model
+	toInput   textinput.Model
 
 	result *domain.BookingRequest
 
@@ -48,6 +58,8 @@ func NewModel(root domain.MenuNode, cfg config.Config) Model {
 	m.cfg = cfg
 	m.menuRoot = root
 	m.step = stepPerson
+	m.availCursor = 0
+	m.detailFocus = 0
 	initInputs(&m)
 	return m
 }
