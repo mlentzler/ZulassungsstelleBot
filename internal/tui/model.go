@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -274,5 +276,99 @@ func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
+func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch k := msg.(type) {
+	case tea.KeyMsg:
+		switch k.String() {
+		case "tab":
+			m.detailFocus = (m.detailFocus + 1) % 3
+			switch m.mode {
+			case domain.AvailOneOff:
+				if m.detailFocus == 0 { m.dateInput.Focus(); m.fromInput.Blur(); m.toInput.Blur() }
+				if m.detailFocus == 1 { m.dateInput.Blur(); m.fromInput.Focus(); m.toInput.Blur() }
+				if m.detailFocus == 2 { m.dateInput.Blur(); m.fromInput.Blur(); m.toInput.Focus() }
+			case domain.AvailRecurring:
+				if m.detailFocus == 0 { m.fromInput.Blur(); m.toInput.Blur() }
+				if m.detailFocus == 1 { m.fromInput.Focus(); m.toInput.Blur() }
+			  if m.detailFocus == 2 { m.fromInput.Blur(); m.toInput.Focus() }
+			}
+			return m, nil
+
+		//Weekday selection only in recurring and focus = 0
+		case "up", "k":
+			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCorsor > 0 {
+				m.weekdayCorsor--
+				return m, nil
+			}
+		case "down", "j":
+			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCorsor < len(weekdays) {
+				m.weekdayCorsor++
+				return m, nil
+			}
+
+		//Confirm
+		case "enter":
+			var err error
+			if m.mode == domain.AvailOneOff {
+				if _, err = valvalidateDateISO(m.dateInput.Value()); err != nil {
+				m.errMsg = err.Error(); return m, nil
+				}
+
+				fh, fe := parseHour(m.fromInput.Value())
+				if fe != nil { m.errMsg = fe.Error(); return m, nil }
+
+				th, te := parseHour(m.toInput.Value())
+				if te != nil { m.errMsg = te.Error(); return m, nil }
+
+				if err = validateHours(fh, th); err != nil { m.errMsg = err.Error(); return m, nil }
+
+				m.fromHour, m.toHour = fh, th
+				
+				m.dateISO = strings.TrimSpace(m.dateInput.Value())
+			} else { //recuring mode
+				fh, fe = parseHour(m.fromInput.Value())
+				if fe != nil { m.errMsg = fe.Error(); return m, nil }
+				th, te = parseHour(m.toInput.Value())
+				if te != nil { m.errMsg = te.Error(); return m, nil }
+
+				if err = validateHours(fh, th); err != nil { m.errMsg = err.Error(); return m, nil }
+
+				m.fromHour, m.toHour = fh, th
+			}
+
+			m.errMsg = ""
+			m.step = stepReview
+			return m, nil
+
+		case "backspace": 
+			m.step = stepAvailabilityMode
+			return m, nil
+
+		case "esc", "ctrl + c":
+			return m, tea.Quit
+		}
+	}
+
+	var cmd tea.Cmd
+	if m.mode == domain.AvailOneOff {
+		if m.detailFocus == 0 {
+			m.dateInput, cmd = m.dateInput.Update(msg); return m, cmd
+		}
+		if m.detailFocus == 1 {
+			m.fromInput, cmd = m.fromInput.Update(msg); return m, cmd
+		}
+		m.toInput, cmd = m.toInput.Update(msg); return m, cmd
+	} else { // recurring mode
+		if m.detailFocus = 1 {
+			m.fromInput, cmd = m.fromInput.Update(msg); return m, cmd
+		}
+		if m.detailFocus = 2 {
+			 m.toInput, cmd = m.toInput.Update(msg); return m, cmd
+		}
+	}
+
+	return m, nil
+}
+
+
 func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd)      { return m, nil }

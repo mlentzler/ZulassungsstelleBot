@@ -36,7 +36,7 @@ func validateDateISO(s string) (time.Time, error) {
 	return t, nil
 }
 
-func parseHours(s string) (int, error) {
+func parseHour(s string) (int, error) {
 	s = strings.TrimSpace(s)
 	n, err := strconv.Atoi(s)
 	if err != nil {
