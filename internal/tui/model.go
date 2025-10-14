@@ -233,6 +233,46 @@ func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd)   { return m, nil }
+func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch k := msg.(type) {
+	case tea.KeyMsg:
+		switch k.String() {
+		case "left", "h", "up", "k":
+			if m.availCursor > 0 {
+				m.availCursor--
+			}
+			return m, nil
+		case "right", "l", "down", "j":
+			if m.availCursor < 1 {
+				m.availCursor++
+			}
+			return m, nil
+		case "enter":
+			if m.availCursor == 0 {
+				m.mode = domain.AvailOneOff
+				m.detailFocus = 0
+				m.dateInput.Focus()
+				m.fromInput.Blur()
+				m.toInput.Blur()
+			} else {
+				m.mode = domain.AvailRecurring
+				m.detailFocus = 0
+				m.dateInput.Blur()
+				m.fromInput.Blur()
+				m.toInput.Blur()
+			}
+			m.errMsg = ""
+			m.step = stepAvailabilityDetail
+			return m, nil
+		case "backspace":
+			m.step = stepMenu
+			return m, nil
+		case "esc", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
 func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
 func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd)      { return m, nil }
