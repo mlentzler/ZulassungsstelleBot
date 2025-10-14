@@ -19,7 +19,6 @@ func viewPerson(m Model) string {
 }
 
 func viewMenu(m Model) string {
-	// TODO: breadcrumb + Liste aktuelle Ebene + footer
 	var b strings.Builder
 	b.WriteString("📂 Auswahl-Menü\n")
 	b.WriteString(breadcrumb(&m) + "\n\n")
@@ -47,12 +46,21 @@ func viewMenu(m Model) string {
 	return b.String()
 }
 
-/*
 func viewAvailMode(m Model) string {
-	// TODO: radio-like Auswahl (Einmalig/Wöchentlich)
-	return ""
+	o1 := "  Einmaliger Termin"
+	o2 := "  Wöchentlich (z. B. Mi 10–13)"
+	if m.availCursor == 0 {
+		o1 = "➤ Einmaliger Termin"
+	} else {
+		o2 = "➤ Wöchentlich (z. B. Mi 10–13)"
+	}
+	s := "⏱️  Verfügbarkeitsmodus wählen\n\n"
+	s += o1 + "\n" + o2 + "\n\n"
+	s += "←/→ oder ↑/↓: wählen · Enter: weiter · Backspace: zurück · Esc/Ctrl+C: beenden\n"
+	return s
 }
 
+/*
 func viewAvailDetail(m Model) string {
 	// TODO: je nach mode die Felder anzeigen (dateISO / weekday + from/to)
 	return ""
@@ -64,6 +72,5 @@ func viewReview(m Model) string {
 }:
 */
 
-func viewAvailMode(m Model) string   { return "Verfügbarkeitsmodus (kommt später)\n" }
 func viewAvailDetail(m Model) string { return "Verfügbarkeitsdetails (kommen später)\n" }
 func viewReview(m Model) string      { return "Review (kommt später)\n" }
