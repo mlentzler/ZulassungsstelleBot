@@ -3,6 +3,8 @@ package tui
 import (
 	"fmt"
 	"strings"
+
+	"github.com/mlentzler/ZulassungsstelleBot/internal/domain"
 )
 
 func viewPerson(m Model) string {
@@ -42,7 +44,7 @@ func viewMenu(m Model) string {
 		fmt.Fprintf(&b, "%s%s%s\n", cursor, n.Title, leaf)
 	}
 
-	b.WriteString("\n↑/↓: bewegen · Enter: wählen · Backspace: zurück · Ctrl+C: beenden\n")
+	b.WriteString("\n↑/↓: bewegen · Enter: wählen · Backspace: zurück · Esc/Ctrl+C: beenden\n")
 	return b.String()
 }
 
@@ -60,17 +62,70 @@ func viewAvailMode(m Model) string {
 	return s
 }
 
-/*
 func viewAvailDetail(m Model) string {
-	// TODO: je nach mode die Felder anzeigen (dateISO / weekday + from/to)
-	return ""
+	if m.mode == domain.AvailOneOff {
+		f0, f1, f2 := "  ", "  ", "  "
+		if m.detailFocus == 0 {
+			f0 = "➤ "
+		}
+		if m.detailFocus == 1 {
+			f1 = "➤ "
+		}
+		if m.detailFocus == 2 {
+			f2 = "➤ "
+		}
+
+		s := "📅 Einmaliger Termin\n\n"
+		s += f0 + "Datum (YYYY-MM-DD): " + m.dateInput.View() + "\n\n"
+		s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
+		s += f2 + "To Stunde (1-24):   " + m.toInput.View() + "\n\n"
+		if m.errMsg != "" {
+			s += "⚠️  " + m.errMsg + "\n\n"
+		}
+		s += "Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · Backspace: zurück · Esc/Ctrl+C: beenden\n"
+		return s
+	}
+
+	// Recurring
+	f0, f1, f2 := "  ", "  ", "  "
+	if m.detailFocus == 0 {
+		f0 = "➤ "
+	}
+	if m.detailFocus == 1 {
+		f1 = "➤ "
+	}
+	if m.detailFocus == 2 {
+		f2 = "➤ "
+	}
+
+	s := "🔁 Wöchentliche Verfügbarkeit\n\n"
+	// Weekday-List (einfach)
+	for i, wd := range weekdays {
+		cur := "  "
+		if i == m.weekdayCursor {
+			cur = "● "
+		}
+		if m.detailFocus == 0 && i == m.weekdayCursor {
+			s += f0 + cur + wd + "\n"
+		} else {
+			s += "  " + cur + wd + "\n"
+		}
+	}
+	s += "\n"
+	s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
+	s += f2 + "To Stunde (1-24):   " + m.toInput.View() + "\n\n"
+	if m.errMsg != "" {
+		s += "⚠️  " + m.errMsg + "\n\n"
+	}
+	s += "↑/↓: Wochentag (wenn markiert) · Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · Ctrl+Backspace: zurück · Esc/Ctrl+C: beenden\n"
+	return s
 }
 
+/*
 func viewReview(m Model) string {
 	// TODO: Zusammenfassung + "Enter: bestätigen · Backspace: zurück"
 	return ""
 }:
 */
 
-func viewAvailDetail(m Model) string { return "Verfügbarkeitsdetails (kommen später)\n" }
-func viewReview(m Model) string      { return "Review (kommt später)\n" }
+func viewReview(m Model) string { return "Review (kommt später)\n" }

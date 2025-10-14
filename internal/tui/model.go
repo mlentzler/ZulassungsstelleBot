@@ -42,7 +42,7 @@ type Model struct {
 	dateInput textinput.Model
 
 	weekday       string
-	weekdayCorsor int
+	weekdayCursor int
 
 	fromHour  int
 	toHour    int
@@ -63,6 +63,7 @@ func NewModel(root domain.MenuNode, cfg config.Config) Model {
 	m.availCursor = 0
 	m.detailFocus = 0
 	initInputs(&m)
+	initAvailInputs(&m)
 	return m
 }
 
@@ -140,7 +141,7 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.step = stepMenu
 				return m, nil
 			}
-		case "esc", "ctrl+c":
+		case "esc":
 			return m, tea.Quit
 		case "tab":
 			if m.nameInput.Focused() {
@@ -153,7 +154,7 @@ func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			focusName(&m)
 			return m, nil
-		case "shift+tab":
+		case "shift + tab":
 			if m.phoneInput.Focused() {
 				focusEmail(&m)
 				return m, nil
@@ -213,7 +214,7 @@ func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.menuCursor++
 			}
 			return m, nil
-		case "enter":
+		case "enter", "l", "right":
 			if len(nodes) == 0 {
 				return m, nil
 			}
@@ -225,10 +226,10 @@ func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.path = append(currentPathTitles(&m), n.Title)
 			m.step = stepAvailabilityMode
 			return m, nil
-		case "backspace", "h":
+		case "left", "h":
 			popMenu(&m)
 			return m, nil
-		case "esc", "ctrl+c":
+		case "esc":
 			return m, tea.Quit
 		}
 	}
@@ -239,12 +240,12 @@ func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch k := msg.(type) {
 	case tea.KeyMsg:
 		switch k.String() {
-		case "left", "h", "up", "k":
+		case "up", "k":
 			if m.availCursor > 0 {
 				m.availCursor--
 			}
 			return m, nil
-		case "right", "l", "down", "j":
+		case "down", "j":
 			if m.availCursor < 1 {
 				m.availCursor++
 			}
@@ -266,10 +267,10 @@ func updateAvailMode(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.errMsg = ""
 			m.step = stepAvailabilityDetail
 			return m, nil
-		case "backspace":
+		case "left", "h":
 			m.step = stepMenu
 			return m, nil
-		case "esc", "ctrl+c":
+		case "esc":
 			return m, tea.Quit
 		}
 	}
@@ -284,25 +285,46 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.detailFocus = (m.detailFocus + 1) % 3
 			switch m.mode {
 			case domain.AvailOneOff:
-				if m.detailFocus == 0 { m.dateInput.Focus(); m.fromInput.Blur(); m.toInput.Blur() }
-				if m.detailFocus == 1 { m.dateInput.Blur(); m.fromInput.Focus(); m.toInput.Blur() }
-				if m.detailFocus == 2 { m.dateInput.Blur(); m.fromInput.Blur(); m.toInput.Focus() }
+				if m.detailFocus == 0 {
+					m.dateInput.Focus()
+					m.fromInput.Blur()
+					m.toInput.Blur()
+				}
+				if m.detailFocus == 1 {
+					m.dateInput.Blur()
+					m.fromInput.Focus()
+					m.toInput.Blur()
+				}
+				if m.detailFocus == 2 {
+					m.dateInput.Blur()
+					m.fromInput.Blur()
+					m.toInput.Focus()
+				}
 			case domain.AvailRecurring:
-				if m.detailFocus == 0 { m.fromInput.Blur(); m.toInput.Blur() }
-				if m.detailFocus == 1 { m.fromInput.Focus(); m.toInput.Blur() }
-			  if m.detailFocus == 2 { m.fromInput.Blur(); m.toInput.Focus() }
+				if m.detailFocus == 0 {
+					m.fromInput.Blur()
+					m.toInput.Blur()
+				}
+				if m.detailFocus == 1 {
+					m.fromInput.Focus()
+					m.toInput.Blur()
+				}
+				if m.detailFocus == 2 {
+					m.fromInput.Blur()
+					m.toInput.Focus()
+				}
 			}
 			return m, nil
 
 		//Weekday selection only in recurring and focus = 0
 		case "up", "k":
-			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCorsor > 0 {
-				m.weekdayCorsor--
+			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCursor > 0 {
+				m.weekdayCursor--
 				return m, nil
 			}
 		case "down", "j":
-			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCorsor < len(weekdays) {
-				m.weekdayCorsor++
+			if m.mode == domain.AvailRecurring && m.detailFocus == 0 && m.weekdayCursor < len(weekdays) {
+				m.weekdayCursor++
 				return m, nil
 			}
 
@@ -310,28 +332,47 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			var err error
 			if m.mode == domain.AvailOneOff {
-				if _, err = valvalidateDateISO(m.dateInput.Value()); err != nil {
-				m.errMsg = err.Error(); return m, nil
+				if _, err = validateDateISO(m.dateInput.Value()); err != nil {
+					m.errMsg = err.Error()
+					return m, nil
 				}
 
 				fh, fe := parseHour(m.fromInput.Value())
-				if fe != nil { m.errMsg = fe.Error(); return m, nil }
+				if fe != nil {
+					m.errMsg = fe.Error()
+					return m, nil
+				}
 
 				th, te := parseHour(m.toInput.Value())
-				if te != nil { m.errMsg = te.Error(); return m, nil }
+				if te != nil {
+					m.errMsg = te.Error()
+					return m, nil
+				}
 
-				if err = validateHours(fh, th); err != nil { m.errMsg = err.Error(); return m, nil }
+				if err = validateHours(fh, th); err != nil {
+					m.errMsg = err.Error()
+					return m, nil
+				}
 
 				m.fromHour, m.toHour = fh, th
-				
+
 				m.dateISO = strings.TrimSpace(m.dateInput.Value())
 			} else { //recuring mode
-				fh, fe = parseHour(m.fromInput.Value())
-				if fe != nil { m.errMsg = fe.Error(); return m, nil }
-				th, te = parseHour(m.toInput.Value())
-				if te != nil { m.errMsg = te.Error(); return m, nil }
+				fh, fe := parseHour(m.fromInput.Value())
+				if fe != nil {
+					m.errMsg = fe.Error()
+					return m, nil
+				}
+				th, te := parseHour(m.toInput.Value())
+				if te != nil {
+					m.errMsg = te.Error()
+					return m, nil
+				}
 
-				if err = validateHours(fh, th); err != nil { m.errMsg = err.Error(); return m, nil }
+				if err = validateHours(fh, th); err != nil {
+					m.errMsg = err.Error()
+					return m, nil
+				}
 
 				m.fromHour, m.toHour = fh, th
 			}
@@ -340,11 +381,11 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.step = stepReview
 			return m, nil
 
-		case "backspace": 
+		case "right", "h":
 			m.step = stepAvailabilityMode
 			return m, nil
 
-		case "esc", "ctrl + c":
+		case "esc":
 			return m, tea.Quit
 		}
 	}
@@ -352,23 +393,27 @@ func updateAvailDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	if m.mode == domain.AvailOneOff {
 		if m.detailFocus == 0 {
-			m.dateInput, cmd = m.dateInput.Update(msg); return m, cmd
+			m.dateInput, cmd = m.dateInput.Update(msg)
+			return m, cmd
 		}
 		if m.detailFocus == 1 {
-			m.fromInput, cmd = m.fromInput.Update(msg); return m, cmd
+			m.fromInput, cmd = m.fromInput.Update(msg)
+			return m, cmd
 		}
-		m.toInput, cmd = m.toInput.Update(msg); return m, cmd
+		m.toInput, cmd = m.toInput.Update(msg)
+		return m, cmd
 	} else { // recurring mode
-		if m.detailFocus = 1 {
-			m.fromInput, cmd = m.fromInput.Update(msg); return m, cmd
+		if m.detailFocus == 1 {
+			m.fromInput, cmd = m.fromInput.Update(msg)
+			return m, cmd
 		}
-		if m.detailFocus = 2 {
-			 m.toInput, cmd = m.toInput.Update(msg); return m, cmd
+		if m.detailFocus == 2 {
+			m.toInput, cmd = m.toInput.Update(msg)
+			return m, cmd
 		}
 	}
 
 	return m, nil
 }
 
-
-func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd)      { return m, nil }
+func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
