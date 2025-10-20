@@ -29,10 +29,11 @@ type Model struct {
 	emailInput textinput.Model
 	phoneInput textinput.Model
 
-	menuRoot   domain.MenuNode
-	menuStack  []int
-	menuCursor int
-	path       []string
+	menuRoot      domain.MenuNode
+	menuStack     []int
+	menuCursor    int
+	path          []string
+	menuSelectors []string
 
 	mode        domain.AvailabilityKind
 	availCursor int
@@ -236,6 +237,8 @@ func updateMenu(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.path = append(currentPathTitles(&m), n.Title)
+			selectors := currentPathSelectors(&m, m.menuCursor)
+			m.menuSelectors = selectors
 			m.step = stepAvailabilityMode
 			return m, nil
 		case "left", "h":
@@ -523,8 +526,11 @@ func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 				Name:  m.nameInput.Value(),
 				Email: m.emailInput.Value(),
 				Phone: m.phoneInput.Value(),
-				Menu:  domain.MenuChoice{Path: append([]string{}, m.path...)},
-				TZ:    m.cfg.TZ,
+				Menu: domain.MenuChoice{
+					Path:      append([]string{}, m.path...),
+					Selectors: append([]string{}, m.menuSelectors...),
+				},
+				TZ: m.cfg.TZ,
 			}
 
 			if m.mode == domain.AvailOneOff {

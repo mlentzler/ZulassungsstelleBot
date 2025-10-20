@@ -30,6 +30,23 @@ func currentPathTitles(m *Model) []string {
 	return titles
 }
 
+func currentPathSelectors(m *Model, leafIdx int) []string {
+	var sels []string
+	node := m.menuRoot
+	for _, idx := range m.menuStack {
+		node = node.Children[idx]
+		if node.Selector != "" {
+			sels = append(sels, node.Selector)
+		}
+	}
+	// Blatt
+	children := currentLevelNodes(m)
+	if leafIdx >= 0 && leafIdx < len(children) && children[leafIdx].Selector != "" {
+		sels = append(sels, children[leafIdx].Selector)
+	}
+
+	return sels
+}
 func breadcrumb(m *Model) string {
 	parts := []string{"Start"}
 	parts = append(parts, currentPathTitles(m)...)

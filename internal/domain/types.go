@@ -32,12 +32,13 @@ type Availability struct {
 type MenuNode struct {
 	Title    string     `json:"title" yaml:"title"`
 	Children []MenuNode `json:"children,omitempty" yaml:"children,omitempty"`
-	// Selector string `json:"selector,omitempty"`
-	// Path     string `json:"path,omitempty"`
+	Selector string     `json:"selector,omitempty"`
+	Path     []string   `json:"path,omitempty"`
 }
 
 type MenuChoice struct {
-	Path []string
+	Path      []string
+	Selectors []string
 }
 
 type BookingRequest struct {
