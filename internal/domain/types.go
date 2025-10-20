@@ -13,10 +13,14 @@ type OneOff struct {
 	ToHour   int
 }
 
-type Recurring struct {
+type DayWindow struct {
 	Weekday  string // "MO","TU","WE","TH","FR","SA","SU"
 	FromHour int
 	ToHour   int
+}
+
+type Recurring struct {
+	Days []DayWindow
 }
 
 type Availability struct {
