@@ -102,16 +102,6 @@ func viewAvailDetail(m Model) string {
 		tf := "  "
 		ff := "  "
 		of := "  "
-		if i == m.recCursor {
-			switch m.recField {
-			case 0:
-				tf = "★ "
-			case 1:
-				ff = "★ "
-			case 2:
-				of = "★ "
-			}
-		}
 
 		fmt.Fprintf(&b, "%s%s%s  %-2s   %sFrom: %s   %sTo: %s\n",
 			rowSel, tf, toggle, wd,
