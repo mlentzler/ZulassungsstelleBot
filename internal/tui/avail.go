@@ -26,6 +26,22 @@ func initAvailInputs(m *Model) {
 	m.toInput.Placeholder = "To 1-24Uhr"
 	m.toInput.CharLimit = 2
 	m.toInput.Width = 5
+
+	for i := 0; i < 7; i++ {
+		fi := textinput.New()
+		fi.Placeholder = "From"
+		fi.CharLimit = 2
+		fi.Width = 4
+
+		ti := textinput.New()
+		ti.Placeholder = "To"
+		ti.CharLimit = 2
+		ti.Width = 4
+
+		m.recFromInputs[i] = fi
+		m.recToInputs[i] = ti
+		m.recSelected[i] = false
+	}
 }
 
 func validateDateISO(s string) (time.Time, error) {

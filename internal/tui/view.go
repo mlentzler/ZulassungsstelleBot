@@ -76,49 +76,53 @@ func viewAvailDetail(m Model) string {
 		}
 
 		s := "📅 Einmaliger Termin\n\n"
-		s += f0 + "Datum (DD.MM.YYYY): " + m.dateInput.View() + "\n\n"
+		s += f0 + "Datum (YYYY-MM-DD): " + m.dateInput.View() + "\n\n"
 		s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
-		s += f2 + "To Stunde (1-24):   " + m.toInput.View() + "\n\n"
+		s += f2 + "To   Stunde (1-24): " + m.toInput.View() + "\n\n"
 		if m.errMsg != "" {
 			s += "⚠️  " + m.errMsg + "\n\n"
 		}
-		s += "Tab/Ctrl+Tab: Feld wechseln · Enter: weiter · H: zurück · Esc: beenden\n"
+		s += "Tab/Shift+Tab: Feld wechseln · Enter: weiter · Esc: zurück · q/Ctrl+C: beenden\n"
 		return s
 	}
 
-	// Recurring
-	f0, f1, f2 := "  ", "  ", "  "
-	if m.detailFocus == 0 {
-		f0 = "➤ "
-	}
-	if m.detailFocus == 1 {
-		f1 = "➤ "
-	}
-	if m.detailFocus == 2 {
-		f2 = "➤ "
-	}
+	var b strings.Builder
+	b.WriteString("🔁 Wöchentliche Verfügbarkeit\n\n")
+	b.WriteString("  Leertaste: Tag an/aus · ↑/↓: Zeile · ←/→ oder Tab: Feld · Enter: weiter · Esc: zurück · q/Ctrl+C: beenden\n\n")
 
-	s := "🔁 Wöchentliche Verfügbarkeit\n\n"
-	// Weekday-List (einfach)
 	for i, wd := range weekdays {
-		cur := "  "
-		if i == m.weekdayCursor {
-			cur = "● "
+		rowSel := "  "
+		if i == m.recCursor {
+			rowSel = "➤ "
 		}
-		if m.detailFocus == 0 && i == m.weekdayCursor {
-			s += f0 + cur + wd + "\n"
-		} else {
-			s += "  " + cur + wd + "\n"
+		toggle := "[ ]"
+		if m.recSelected[i] {
+			toggle = "[x]"
 		}
+		tf := "  "
+		ff := "  "
+		of := "  "
+		if i == m.recCursor {
+			switch m.recField {
+			case 0:
+				tf = "★ "
+			case 1:
+				ff = "★ "
+			case 2:
+				of = "★ "
+			}
+		}
+
+		fmt.Fprintf(&b, "%s%s%s  %-2s   %sFrom: %s   %sTo: %s\n",
+			rowSel, tf, toggle, wd,
+			ff, m.recFromInputs[i].View(),
+			of, m.recToInputs[i].View(),
+		)
 	}
-	s += "\n"
-	s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
-	s += f2 + "To Stunde (1-24):   " + m.toInput.View() + "\n\n"
 	if m.errMsg != "" {
-		s += "⚠️  " + m.errMsg + "\n\n"
+		b.WriteString("\n⚠️  " + m.errMsg + "\n")
 	}
-	s += "↑/↓: Wochentag (wenn markiert) · Tab: Feld wechseln · Enter: weiter · H: zurück · Esc: beenden\n"
-	return s
+	return b.String()
 }
 
 /*
