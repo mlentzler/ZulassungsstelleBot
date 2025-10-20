@@ -125,11 +125,35 @@ func viewAvailDetail(m Model) string {
 	return b.String()
 }
 
-/*
 func viewReview(m Model) string {
-	// TODO: Zusammenfassung + "Enter: bestätigen · Backspace: zurück"
-	return ""
-}:
-*/
+	var b strings.Builder
 
-func viewReview(m Model) string { return "Review (kommt später)\n" }
+	b.WriteString("🧾 Zusammenfassung\n\n")
+	b.WriteString("Name:   " + m.nameInput.Value() + "\n")
+	b.WriteString("E-Mail: " + m.emailInput.Value() + "\n")
+	b.WriteString("Tel.:   " + m.phoneInput.Value() + "\n\n")
+
+	b.WriteString("Menü:   " + breadcrumb(&m) + "\n\n")
+
+	if m.mode == domain.AvailOneOff {
+		b.WriteString(fmt.Sprintf("Verfügbarkeit: Einmalig — %s (%02d–%02d)\n\n",
+			m.dateISO, m.fromHour, m.toHour))
+	} else {
+		b.WriteString("Verfügbarkeit: Wöchentlich —\n")
+		if len(m.recDays) == 0 {
+			b.WriteString("  (keine Tage ausgewählt)\n\n")
+		} else {
+			for _, d := range m.recDays {
+				b.WriteString(fmt.Sprintf("  %s  %02d–%02d\n", d.Weekday, d.FromHour, d.ToHour))
+			}
+			b.WriteString("\n")
+		}
+	}
+
+	if m.errMsg != "" {
+		b.WriteString("⚠️  " + m.errMsg + "\n\n")
+	}
+
+	b.WriteString("Enter: bestätigen · Esc: zurück · q/Ctrl+C: abbrechen\n")
+	return b.String()
+}

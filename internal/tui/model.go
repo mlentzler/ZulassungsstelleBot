@@ -509,4 +509,50 @@ func setRecFocus(m *Model) {
 	}
 }
 
-func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd) { return m, nil }
+func updateReview(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch k := msg.(type) {
+	case tea.KeyMsg:
+		switch k.String() {
+		case "enter":
+			if m.mode == domain.AvailRecurring && len(m.recDays) == 0 {
+				m.errMsg = "Keine Tage ausgewählt – bitte im vorherigen Schritt mindestens einen Tag aktivieren."
+				return m, nil
+			}
+
+			br := domain.BookingRequest{
+				Name:  m.nameInput.Value(),
+				Email: m.emailInput.Value(),
+				Phone: m.phoneInput.Value(),
+				Menu:  domain.MenuChoice{Path: append([]string{}, m.path...)},
+				TZ:    m.cfg.TZ,
+			}
+
+			if m.mode == domain.AvailOneOff {
+				br.Avail = domain.Availability{
+					Kind: domain.AvailOneOff,
+					OneOff: &domain.OneOff{
+						DateISO:  m.dateISO,
+						FromHour: m.fromHour,
+						ToHour:   m.toHour,
+					},
+				}
+			} else {
+				br.Avail = domain.Availability{
+					Kind:      domain.AvailRecurring,
+					Recurring: &domain.Recurring{Days: append([]domain.DayWindow{}, m.recDays...)},
+				}
+			}
+
+			m.result = &br
+			m.step = stepDone
+			return m, tea.Quit
+
+		case "esc":
+			m.step = stepAvailabilityDetail
+			return m, nil
+		case "ctrl+c", "q":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
