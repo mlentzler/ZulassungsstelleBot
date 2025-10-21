@@ -44,10 +44,10 @@ func initAvailInputs(m *Model) {
 	}
 }
 
-func validateDateISO(s string) (time.Time, error) {
+func validateDateEU(s string) (time.Time, error) {
 	t, err := time.Parse("02.01.2006", strings.TrimSpace(s))
 	if err != nil {
-		return time.Time{}, fmt.Errorf("Datum muss DD.MM.YYYY sein")
+		return time.Time{}, fmt.Errorf("Datum muss DD.MM.YYYY sein", err)
 	}
 	return t, nil
 }

@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -356,7 +357,7 @@ func updateOneOffDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			var err error
-			if _, err = validateDateISO(m.dateInput.Value()); err != nil {
+			if _, err = validateDateEU(m.dateInput.Value()); err != nil {
 				m.errMsg = err.Error()
 				return m, nil
 			}
@@ -376,7 +377,16 @@ func updateOneOffDetail(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			m.fromHour, m.toHour = fh, th
-			m.dateISO = strings.TrimSpace(m.dateInput.Value())
+			m.dateISO = func(s string) string {
+				s = strings.TrimSpace(s)
+				if t, err := time.Parse("02.01.2006", s); err == nil {
+					return t.Format("2006-01-02")
+				}
+				if t, err := time.Parse("2.1.2006", s); err == nil {
+					return t.Format("2006-01-02")
+				}
+				return ""
+			}(m.dateInput.Value())
 			m.errMsg = ""
 			m.step = stepReview
 			return m, nil
