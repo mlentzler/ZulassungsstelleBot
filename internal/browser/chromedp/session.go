@@ -30,9 +30,9 @@ func New(headless bool) (*Session, error) {
 	// DEBUG-Logs aus chromedp in dein Terminal
 	ctx, cancel := chromedp.NewContext(
 		alloc,
-		chromedp.WithDebugf(log.Printf),
-		// chromedp.WithLogf(log.Printf),
-		// chromedp.WithErrorf(log.Printf),
+		//chromedp.WithDebugf(log.Printf),
+		chromedp.WithLogf(log.Printf),
+		chromedp.WithErrorf(log.Printf),
 	)
 	return &Session{alloc: alloc, ctx: ctx, cancel: cancel}, nil
 }
