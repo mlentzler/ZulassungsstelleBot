@@ -73,6 +73,11 @@ func Run(ctx context.Context, drv browser.Driver, cfg Config, req domain.Booking
 			sleep(ctx, 3*time.Second)
 			continue
 		}
+
+		if err := drv.FillFromMap(ctx, form); err != nil {
+			sleep(ctx, 3*time.Second)
+			continue
+		}
 		return nil
 	}
 }

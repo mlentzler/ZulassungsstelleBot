@@ -20,6 +20,7 @@ type Driver interface {
 	PickDate(ctx context.Context, date time.Time) error
 	ListSlots(ctx context.Context) ([]Slot, error)
 	BookSlot(ctx context.Context, s Slot, form map[string]string) error
+	FillFromMap(ctx context.Context, form map[string]string) error
 }
 
 func SlotMatches(av domain.Availability, slot time.Time, loc *time.Location) bool {

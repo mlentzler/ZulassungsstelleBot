@@ -11,6 +11,7 @@ import (
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
+	"github.com/chromedp/chromedp/kb"
 
 	"github.com/mlentzler/ZulassungsstelleBot/internal/browser"
 )
@@ -436,27 +437,122 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		d.logf("BookSlot: Formular-Indikator sichtbar.")
 	}
 
-	// 5) Felder füllen (wie gehabt)
-	actions := []chromedp.Action{}
-	if v := form["name"]; v != "" {
-		actions = append(actions, chromedp.SetValue(XpInputByAnyLabel("Name", "Vor- und Nachname"), v, chromedp.BySearch))
-	}
-	if v := form["email"]; v != "" {
-		actions = append(actions, chromedp.SetValue(XpInputByAnyLabel("E-Mail", "E-Mail-Adresse"), v, chromedp.BySearch))
-	}
-	if v := form["telefon"]; v != "" {
-		actions = append(actions, chromedp.SetValue(XpInputByAnyLabel("Telefon", "Telefonnummer"), v, chromedp.BySearch))
-	}
+	return nil
+}
 
-	// 6) Bestätigen
-	actions = append(actions,
-		Sleep(250),
-		chromedp.Click(XpSubmit, chromedp.NodeVisible, chromedp.BySearch),
-		chromedp.WaitReady("body", chromedp.ByQuery),
+func (d *Driver) FillFromMap(ctx context.Context, form map[string]string) error {
+	d.logf("FillFromMap: called")
+	name := strings.TrimSpace(form["name"])
+	email := strings.TrimSpace(form["email"])
+	phone := strings.TrimSpace(form["telefon"])
+
+	// --- Selektoren (IDs bevorzugt)
+	const (
+		selEmailCSS = `#email`
+
+		selNameCSS   = `#field2539`
+		selNameXPath = `/html/body/div/main/div[2]/div[2]/form/div[2]/div/div[3]/div[1]/label/input`
+
+		selPhoneCSS   = `#field11244`
+		selPhoneXPath = `/html/body/div/main/div[2]/div[2]/form/div[2]/div/div[4]/div/label/input`
 	)
 
-	d.logf("BookSlot: sende Formular ab…")
-	return chromedp.Run(c, actions...)
+	// Helfer: versucht mehrere Selektoren der Reihe nach
+	send := func(val string, cands ...chromedp.QueryAction) error {
+		if val == "" {
+			return nil
+		}
+		for _, c := range cands {
+			cctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+			err := chromedp.Run(cctx,
+				c, // WaitVisible(...) steckt in c (siehe unten)
+			)
+			cancel()
+			if err == nil {
+				return nil
+			}
+		}
+		return chromedp.Run(ctx) // no-op error=nil -> wir ignorieren leere Felder
+	}
+
+	// Aktionen zusammensetzen (CSS zuerst, dann XPath-Fallback)
+	emailActions := []chromedp.QueryAction{
+		chromedp.Tasks{
+			chromedp.WaitVisible(selEmailCSS),
+			chromedp.Clear(selEmailCSS),
+			chromedp.SendKeys(selEmailCSS, email),
+			chromedp.SendKeys(selEmailCSS, kb.Tab),
+		},
+	}
+
+	nameActions := []chromedp.QueryAction{
+		chromedp.Tasks{
+			chromedp.WaitVisible(selNameCSS),
+			chromedp.Clear(selNameCSS),
+			chromedp.SendKeys(selNameCSS, name),
+			chromedp.SendKeys(selNameCSS, kb.Tab),
+		},
+		chromedp.Tasks{
+			chromedp.WaitVisible(selNameXPath, chromedp.BySearch),
+			chromedp.Clear(selNameXPath, chromedp.BySearch),
+			chromedp.SendKeys(selNameXPath, name, chromedp.BySearch),
+			chromedp.SendKeys(selNameXPath, kb.Tab, chromedp.BySearch),
+		},
+	}
+
+	phoneActions := []chromedp.QueryAction{
+		chromedp.Tasks{
+			chromedp.WaitVisible(selPhoneCSS),
+			chromedp.Clear(selPhoneCSS),
+			chromedp.SendKeys(selPhoneCSS, phone),
+			chromedp.SendKeys(selPhoneCSS, kb.Tab),
+		},
+		chromedp.Tasks{
+			chromedp.WaitVisible(selPhoneXPath, chromedp.BySearch),
+			chromedp.Clear(selPhoneXPath, chromedp.BySearch),
+			chromedp.SendKeys(selPhoneXPath, phone, chromedp.BySearch),
+			chromedp.SendKeys(selPhoneXPath, kb.Tab, chromedp.BySearch),
+		},
+	}
+
+	// Felder füllen
+	if err := send(email, emailActions...); err != nil {
+		return err
+	}
+	if err := send(name, nameActions...); err != nil {
+		return err
+	}
+	if err := send(phone, phoneActions...); err != nil {
+		return err
+	}
+
+	// Checkbox (AGB/Datenschutz) – wähle, was bei dir passt
+	checkboxCands := []struct {
+		sel string
+		opt chromedp.QueryOption
+	}{
+		{`input[type="checkbox"]`, chromedp.ByQuery},
+		{`//label[contains(.,'Datenschutz') or contains(.,'Bedingungen')]/preceding::input[@type='checkbox'][1]`, chromedp.BySearch},
+	}
+
+	for _, c := range checkboxCands {
+		cctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+		err := chromedp.Run(cctx,
+			chromedp.ScrollIntoView(c.sel, c.opt),
+			chromedp.WaitVisible(c.sel, c.opt),
+			chromedp.Click(c.sel, c.opt, chromedp.NodeVisible),
+		)
+		cancel()
+		if err == nil {
+			break
+		}
+	}
+
+	// Submit („Weiter“/„Bestätigen“)
+	return chromedp.Run(ctx,
+		chromedp.Click(`//button[normalize-space()='Weiter' or contains(.,'Bestät')] | //form//button[@type='submit']`, chromedp.BySearch),
+		chromedp.Sleep(500*time.Millisecond), // kurze Stabilisierung, falls Navigation
+	)
 }
 
 func (d *Driver) dumpFormMap(form map[string]string) string {
