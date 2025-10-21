@@ -57,39 +57,17 @@ func Run(ctx context.Context, drv browser.Driver, cfg Config, req domain.Booking
 		}
 
 		var chosen *browser.Slot
-
-		if req.Avail.Kind == domain.AvailOneOff && req.Avail.OneOff != nil {
-			target, _ := time.ParseInLocation("2006-01-02 15:04", req.Avail.OneOff.DateISO+" 11:15", loc)
-			for i := range slots {
-				if slots[i].Start.Equal(target) {
-					chosen = &slots[i]
-					break
-				}
+		for i := range slots {
+			if browser.SlotMatches(req.Avail, slots[i].Start, loc) {
+				chosen = &slots[i]
+				break
 			}
-			// wenn 11:15 nicht existiert, fallback auf dein Fenster-Matching
 		}
+
 		if chosen == nil {
-			for i := range slots {
-				if browser.SlotMatches(req.Avail, slots[i].Start, loc) {
-					chosen = &slots[i]
-					break
-				}
-			}
+			sleep(ctx, jitter(cfg.PollMinSec, cfg.PollMaxSec))
+			continue
 		}
-
-		/*
-			for i := range slots {
-				if browser.SlotMatches(req.Avail, slots[i].Start, loc) {
-					chosen = &slots[i]
-					break
-				}
-			}
-
-			if chosen == nil {
-				sleep(ctx, jitter(cfg.PollMinSec, cfg.PollMaxSec))
-				continue
-			}
-		*/
 
 		if err := drv.BookSlot(ctx, *chosen, form); err != nil {
 			sleep(ctx, 3*time.Second)
