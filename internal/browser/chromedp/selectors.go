@@ -12,3 +12,11 @@ const XpTerminBuchen = `//*[self::a or self::button][contains(normalize-space(.)
 
 // Zeit-Buttons (HH:MM)
 const XpTimeButtons = `//button[normalize-space(.) and not(@disabled)] | //a[normalize-space(.) and not(@disabled)]`
+
+// Formularfelder (neue Struktur)
+const (
+	XpInputName         = `//span[contains(., 'Nachname, Vorname')]/ancestor::label//input`
+	XpInputEmail        = `//span[contains(., 'E-Mail-Adresse')]/ancestor::label//input`
+	XpInputPhone        = `//span[contains(., 'Handy/Telefon')]/ancestor::label//input`
+	XpCheckboxPrivacy   = `//label[contains(., 'Datenschutzbestimmungen')]/preceding-sibling::div/input[@type='checkbox']`
+)
