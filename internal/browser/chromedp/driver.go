@@ -79,9 +79,9 @@ func (d *Driver) StartFlow(ctx context.Context, baseURL string, titles []string,
 	}
 
 	return chromedp.Run(c,
-		chromedp.WaitVisible(XpTerminBuchen, chromedp.BySearch),
-		chromedp.ScrollIntoView(XpTerminBuchen, chromedp.BySearch),
-		chromedp.Click(XpTerminBuchen, chromedp.NodeVisible, chromedp.BySearch),
+		chromedp.WaitVisible(XpBookSloot, chromedp.BySearch),
+		chromedp.ScrollIntoView(XpBookSloot, chromedp.BySearch),
+		chromedp.Click(XpBookSloot, chromedp.NodeVisible, chromedp.BySearch),
 		Sleep(500),
 	)
 }

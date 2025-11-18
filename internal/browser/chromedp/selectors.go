@@ -7,21 +7,17 @@ var XpCookieTry = []string{
 	`//*[self::button or self::a][contains(normalize-space(.),"Einverstanden")]`,
 }
 
-// „Termin buchen“-Button
-const XpTerminBuchen = `//*[self::a or self::button][contains(normalize-space(.),"Termin buchen")]`
+const XpBookSloot = `//*[self::a or self::button][contains(normalize-space(.),"Termin buchen")]`
 
-// Zeit-Buttons (HH:MM)
 const XpTimeButtons = `//button[normalize-space(.) and not(@disabled)] | //a[normalize-space(.) and not(@disabled)]`
 
-// Formularfelder (neue Struktur)
 const (
 	XpInputName       = `//span[contains(., 'Nachname, Vorname')]/ancestor::label//input`
 	XpInputEmail      = `//span[contains(., 'E-Mail-Adresse')]/ancestor::label//input`
 	XpInputPhone      = `//span[contains(., 'Handy/Telefon')]/ancestor::label//input`
-	XpCheckboxPrivacy = `label[for="IsTermsOfServiceConsentObtained"]` // Target the label for the checkbox
+	XpCheckboxPrivacy = `label[for="IsTermsOfServiceConsentObtained"]`
 )
 
-// Submit Buttons
 const (
 	XpContinue       = `//button[contains(normalize-space(.), 'Weiter')]`
 	XpConfirmBooking = `//button[contains(normalize-space(.), 'Bestätigen')]`
