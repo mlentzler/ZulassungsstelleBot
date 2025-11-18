@@ -21,7 +21,6 @@ type Driver struct {
 	loc  *time.Location
 }
 
-// interne Referenz, die wir in browser.Slot.Ref ablegen
 type slotRef struct {
 	Node *cdp.Node
 	ISO  string
@@ -42,7 +41,6 @@ func (d *Driver) Close(ctx context.Context) error { d.sess.Close(); return nil }
 func (d *Driver) StartFlow(ctx context.Context, baseURL string, titles []string, selectors []string) error {
 	c := d.sess.Context()
 
-	// Start
 	if err := chromedp.Run(c,
 		chromedp.Navigate(baseURL),
 		chromedp.WaitReady("body", chromedp.ByQuery),
@@ -50,7 +48,6 @@ func (d *Driver) StartFlow(ctx context.Context, baseURL string, titles []string,
 		return fmt.Errorf("navigate: %w", err)
 	}
 
-	// Menü-Selektoren nacheinander klicken
 	for i := range selectors {
 		sel := selectors[i]
 		title := ""
@@ -81,7 +78,6 @@ func (d *Driver) StartFlow(ctx context.Context, baseURL string, titles []string,
 		_ = chromedp.Run(c, Sleep(400))
 	}
 
-	// Produktseite → “Termin buchen”
 	return chromedp.Run(c,
 		chromedp.WaitVisible(XpTerminBuchen, chromedp.BySearch),
 		chromedp.ScrollIntoView(XpTerminBuchen, chromedp.BySearch),
@@ -105,6 +101,7 @@ var (
 	xpTimesWithin = `.//button[normalize-space(.) and not(@disabled)] | .//a[normalize-space(.) and not(@disabled)]`
 )
 
+// robustness against different date formats
 func parseDateLabel(s string, loc *time.Location) (time.Time, bool) {
 	s = strings.TrimSpace(s)
 	// YYYY-MM-DD
@@ -127,8 +124,6 @@ func parseDateLabel(s string, loc *time.Location) (time.Time, bool) {
 func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 	c := d.sess.Context()
 
-	// Kandidaten: <a> oder <button>, ggf. mit onclick/selectTime, Zeitklassen oder aria-label
-	// Wir erlauben mehrere Pfade, um unterschiedliche Skins der FrontDesk-Suite abzudecken.
 	const xpCandidates = `
 (
   //a[contains(@class,"time") or contains(@class,"slot") or contains(@class,"time-container") or contains(@onclick,"selectTime") or @aria-label]
@@ -162,7 +157,6 @@ func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 			ok  bool
 		)
 
-		// 1) ISO direkt aus onclick oder data-datetime
 		if onclick != "" {
 			if m := reISO.FindString(onclick); m != "" {
 				iso = m
@@ -181,15 +175,13 @@ func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 			}
 		}
 
-		// 2) Fallback: aus aria-label Datum + Zeit parsen
+		// Fallback: use aria-label to parse time
 		if !ok && aria != "" {
 			if day, dayOK := parseDateLabel(aria, d.loc); dayOK {
 				if tm := reTime.FindString(aria); tm != "" {
-					// HH:MM einfügen
 					parts := strings.SplitN(tm, ":", 2)
 					hh := parts[0]
 					mm := parts[1]
-					// day YYYY-MM-DD + HH:MM in d.loc
 					layout := "2006-01-02 15:04"
 					composed := fmt.Sprintf("%04d-%02d-%02d %s:%s",
 						day.Year(), int(day.Month()), day.Day(), hh, mm)
@@ -202,9 +194,8 @@ func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 			}
 		}
 
-		// 3) weiterer Fallback: data-date + (Zeit aus aria-label)
+		// 2nd Fallback: data-date + time from aria-label
 		if !ok && dataDate != "" {
-			// Versuche YYYY-MM-DD oder DD.MM.YYYY aus data-date zu lesen
 			if day, dayOK := parseDateLabel(dataDate, d.loc); dayOK {
 				var hhmm string
 				if aria != "" {
@@ -222,16 +213,14 @@ func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 		}
 
 		if !ok {
-			// Slot nicht eindeutig interpretierbar
 			d.logf("ListSlots: verwerfe Kandidat (kein ISO/Datum+Zeit) nodeID=%d onclick=%q aria=%q data-datetime=%q data-date=%q",
 				n.NodeID, onclick, aria, dataDatetime, dataDate)
 			continue
 		}
 
-		// Slot akzeptieren
 		out = append(out, browser.Slot{
 			Start: ts,
-			Ref:   slotRef{Node: n, ISO: iso, Aria: aria}, // <— reichere Ref an
+			Ref:   slotRef{Node: n, ISO: iso, Aria: aria},
 		})
 		d.logf("ListSlots: erkannt %s (ISO=%q, aria=%q)", ts.Format(time.RFC3339), iso, aria)
 	}
@@ -246,7 +235,6 @@ func (d *Driver) logf(msg string, args ...any) {
 	}
 }
 
-// getAttr liest ein Attribut direkt aus dem CDP-Node (Attribute-Liste: [name, value, name, value, ...])
 func getAttr(n *cdp.Node, key string) (string, bool) {
 	for i := 0; i+1 < len(n.Attributes); i += 2 {
 		if n.Attributes[i] == key {
@@ -260,7 +248,6 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 	c := d.sess.Context()
 	d.logf("BookSlot: AUFGERUFEN start=%s refType=%T form=%s", s.Start.Format(time.RFC3339), s.Ref, d.dumpFormMap(form))
 
-	// Ref entpacken
 	var (
 		n    *cdp.Node
 		iso  string
@@ -287,10 +274,8 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 			}
 		}
 	default:
-		// nix
 	}
 
-	// Debug: Force overrides (z.B. um *statisch* einen Slot zu testen)
 	if v := form["_forceISO"]; v != "" {
 		d.logf("BookSlot: FORCE ISO override aktiv: %s", v)
 		iso = v
@@ -300,7 +285,6 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		aria = v
 	}
 
-	// Falls wir kein ISO haben, baue eins aus der Startzeit (RFC3339 in d.loc)
 	if iso == "" && !s.Start.IsZero() {
 		iso = s.Start.Format(time.RFC3339)
 		d.logf("BookSlot: kein ISO in Ref, benutze aus Start: %s", iso)
@@ -309,7 +293,6 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 
 	d.logf("BookSlot: Klick-Ziel iso=%q aria=%q hhmm=%q nodePresent=%v", iso, aria, hhmm, n != nil)
 
-	// Kandidaten-XPaths
 	var xps []string
 	if iso != "" {
 		xps = append(xps,
@@ -349,7 +332,7 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		clickErr = err
 	}
 
-	// 2) Fallback: direkter Node-Klick
+	// 2) Fallback: direct Node-Klick
 	if clickErr != nil && n != nil {
 		d.logf("BookSlot: Fallback MouseClickNode auf nodeID=%d", n.NodeID)
 		if err := chromedp.Run(c, chromedp.MouseClickNode(n), Sleep(300)); err != nil {
@@ -360,11 +343,10 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		}
 	}
 
-	// 3) Fallback: JS-click (um Overlays/Pointer-Events zu umgehen)
+	// 3) Fallback: JS-click
 	if clickErr != nil {
 		d.logf("BookSlot: JS-Fallback click() wird versucht…")
 		var ok bool
-		// CSS-Selector-Reihenfolge: data-datetime → aria-label → onclick-contains → time text
 		js := `
 (function(){
   var sel = [];
@@ -385,7 +367,6 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		if aria != "" {
 			parts = append(parts, fmt.Sprintf(`sel.push('[aria-label=%s]');`, xpathQuote(aria)))
 		}
-		// letzter Versuch mit Text, nur grob
 		parts = append(parts, fmt.Sprintf(`sel.push('a.time-container'); sel.push('button');`))
 
 		payload := fmt.Sprintf(js, strings.Join(parts, "\n  "))
@@ -400,10 +381,8 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 	}
 
 	if clickErr != nil {
-		// Optional: OuterHTML dumpen, wenn möglich
 		if n != nil {
 			d.logf("BookSlot: gebe OuterHTML des Kandidaten aus (nodeID=%d)…", n.NodeID)
-			// wir versuchen via aria oder iso ein xp für OuterHTML
 			xp := ""
 			if aria != "" {
 				xp = `//*[@aria-label=` + xpathQuote(aria) + `]`
@@ -421,9 +400,7 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 		return fmt.Errorf("BookSlot: kein Klick möglich: %w", clickErr)
 	}
 
-	// 4) Prüfe, ob der Formular-Schritt sichtbar wurde
 	d.logf("BookSlot: warte auf Formular/Step-2 Indikatoren…")
-	// Passe/erweitere die Selektoren bei Bedarf an deine Seite an
 	indicators := []string{
 		`//label[contains(translate(normalize-space(.),"ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ","abcdefghijklmnopqrstuvwxyzäöü"),"name")]`,
 		`//label[contains(translate(normalize-space(.),"ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ","abcdefghijklmnopqrstuvwxyzäöü"),"e-mail")]`,
@@ -433,8 +410,6 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 
 	if err := chromedp.Run(c, waitAnyVisible(indicators)); err != nil {
 		d.logf("BookSlot: Formular-Indikatoren NICHT erschienen: %v", err)
-		// nicht fatal — manche UIs gehen direkt zur Zusammenfassung; wir machen weiter und hoffen,
-		// dass Felder/Submit gleich da sind.
 	} else {
 		d.logf("BookSlot: Formular-Indikator sichtbar.")
 	}
@@ -446,12 +421,10 @@ func (d *Driver) FillAndContinue(ctx context.Context, form map[string]string) er
 	d.logf("FillAndContinue: called")
 	c := d.sess.Context()
 
-	// Formulardaten aus der Map extrahieren
 	name := strings.TrimSpace(form["name"])
 	email := strings.TrimSpace(form["email"])
 	phone := strings.TrimSpace(form["telefon"])
 
-	// Aktionen definieren
 	actions := []chromedp.Action{
 		// Name
 		chromedp.SendKeys(XpInputName, name, chromedp.BySearch),
@@ -462,16 +435,15 @@ func (d *Driver) FillAndContinue(ctx context.Context, form map[string]string) er
 		// Telefon
 		chromedp.SendKeys(XpInputPhone, phone, chromedp.BySearch),
 
-		// Checkbox (Datenschutz/AGB)
-		chromedp.Click(XpCheckboxPrivacy, chromedp.ByQuery, chromedp.NodeVisible), // Use ByQuery for the label selector
+		// Checkbox (AGB)
+		chromedp.Click(XpCheckboxPrivacy, chromedp.ByQuery, chromedp.NodeVisible),
 
 		// Submit („Weiter“)
-		chromedp.WaitEnabled(XpContinue, chromedp.BySearch), // Wait for the button to be enabled
+		chromedp.WaitEnabled(XpContinue, chromedp.BySearch),
 		chromedp.Click(XpContinue, chromedp.BySearch),
-		chromedp.Sleep(1000 * time.Millisecond), // Wait a bit longer for the next page
+		chromedp.Sleep(1000 * time.Millisecond),
 	}
 
-	// Aktionen ausführen
 	if err := chromedp.Run(c, actions...); err != nil {
 		return fmt.Errorf("FillAndContinue: %w", err)
 	}
