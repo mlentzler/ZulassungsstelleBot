@@ -460,10 +460,11 @@ func (d *Driver) FillFromMap(ctx context.Context, form map[string]string) error 
 		chromedp.SendKeys(XpInputPhone, phone, chromedp.BySearch),
 
 		// Checkbox (Datenschutz/AGB)
-		chromedp.Click(XpCheckboxPrivacy, chromedp.BySearch, chromedp.NodeVisible),
+		chromedp.Click(XpCheckboxPrivacy, chromedp.ByQuery, chromedp.NodeVisible), // Use ByQuery for the label selector
 
 		// Submit („Weiter“/„Bestätigen“)
-		chromedp.Click(XpSubmit, chromedp.BySearch),
+		chromedp.WaitVisible(XpSubmit, chromedp.ByID), // Wait for the button to be visible/enabled
+		chromedp.Click(XpSubmit, chromedp.ByID),
 		chromedp.Sleep(500 * time.Millisecond),
 	}
 
@@ -511,8 +512,3 @@ func XpInputByAnyLabel(labels ...string) string {
 	}
 	return strings.Join(parts, " | ")
 }
-
-const XpSubmit = `//*[self::button or self::a][
-  contains(translate(normalize-space(.),"ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ","abcdefghijklmnopqrstuvwxyzäöü"),"bestät")
-  or contains(normalize-space(.),"Buchen")
-]`

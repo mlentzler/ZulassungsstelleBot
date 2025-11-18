@@ -18,5 +18,8 @@ const (
 	XpInputName         = `//span[contains(., 'Nachname, Vorname')]/ancestor::label//input`
 	XpInputEmail        = `//span[contains(., 'E-Mail-Adresse')]/ancestor::label//input`
 	XpInputPhone        = `//span[contains(., 'Handy/Telefon')]/ancestor::label//input`
-	XpCheckboxPrivacy   = `//label[contains(., 'Datenschutzbestimmungen')]/preceding-sibling::div/input[@type='checkbox']`
+	XpCheckboxPrivacy   = `label[for="IsTermsOfServiceConsentObtained"]` // Target the label for the checkbox
 )
+
+// Submit Button
+const XpSubmit = `button#submit-btn` // Using ID for robustness
