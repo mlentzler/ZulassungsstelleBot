@@ -27,10 +27,8 @@ func New(headless bool) (*Session, error) {
 	}
 	alloc, _ := chromedp.NewExecAllocator(context.Background(), opts...)
 
-	// DEBUG-Logs aus chromedp in dein Terminal
 	ctx, cancel := chromedp.NewContext(
 		alloc,
-		//chromedp.WithDebugf(log.Printf),
 		chromedp.WithLogf(log.Printf),
 		chromedp.WithErrorf(log.Printf),
 	)

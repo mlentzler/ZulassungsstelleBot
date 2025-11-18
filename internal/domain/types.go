@@ -14,7 +14,7 @@ type OneOff struct {
 }
 
 type DayWindow struct {
-	Weekday  string // "MO","TU","WE","TH","FR","SA","SU"
+	Weekday  string
 	FromHour int
 	ToHour   int
 }

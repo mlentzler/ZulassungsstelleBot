@@ -88,13 +88,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case stepPerson:
 		return updatePerson(m, msg)
 	case stepMenu:
-		return updateMenu(m, msg) // stub
+		return updateMenu(m, msg)
 	case stepAvailabilityMode:
-		return updateAvailMode(m, msg) // stub
+		return updateAvailMode(m, msg)
 	case stepAvailabilityDetail:
-		return updateAvailDetail(m, msg) // stub
+		return updateAvailDetail(m, msg)
 	case stepReview:
-		return updateReview(m, msg) // stub
+		return updateReview(m, msg)
 	case stepDone:
 		return m, tea.Quit
 	default:

@@ -19,7 +19,6 @@ func Run(ctx context.Context, cfg config.Config) (domain.BookingRequest, error) 
 	m := NewModel(root, cfg)
 	p := tea.NewProgram(m)
 
-	// Kontext-Abbruch behandeln
 	go func() {
 		<-ctx.Done()
 		p.Quit()

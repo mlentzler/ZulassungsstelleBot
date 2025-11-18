@@ -9,7 +9,7 @@ import (
 
 type Slot struct {
 	Start time.Time
-	Ref   any //TODO set
+	Ref   any
 }
 
 type Driver interface {
@@ -33,7 +33,7 @@ func SlotMatches(av domain.Availability, slot time.Time, loc *time.Location) boo
 
 	case domain.AvailRecurring:
 		d := slot.In(loc)
-		goToDe := [...]string{"SO", "MO", "DI", "MI", "DO", "FR", "SA"} // time.Sunday=0
+		goToDe := [...]string{"SO", "MO", "DI", "MI", "DO", "FR", "SA"}
 		wd := goToDe[d.Weekday()]
 		for _, w := range av.Recurring.Days {
 			if w.Weekday == wd && d.Hour() >= w.FromHour && d.Hour() < w.ToHour {
