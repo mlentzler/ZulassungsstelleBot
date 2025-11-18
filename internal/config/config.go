@@ -28,7 +28,7 @@ func Load() Config {
 		MenuPath: menu,
 		TZ:       tz,
 		BaseURL:  base,
-		Headless: false,
+		Headless: true,
 		PollMin:  45,
 		PollMax:  120,
 	}

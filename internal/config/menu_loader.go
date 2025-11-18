@@ -17,6 +17,5 @@ func LoadMenu(path string) (domain.MenuNode, error) {
 	if err := json.Unmarshal(b, &root); err != nil {
 		return domain.MenuNode{}, fmt.Errorf("menu parse: %w", err)
 	}
-	// TODO: einfache Validierung (non-empty Titel, keine Zyklen etc.)
 	return root, nil
 }

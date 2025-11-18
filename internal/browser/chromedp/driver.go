@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -240,7 +241,9 @@ func (d *Driver) ListSlots(ctx context.Context) ([]browser.Slot, error) {
 }
 
 func (d *Driver) logf(msg string, args ...any) {
-	log.Printf("[chromedpdrv] "+msg, args...)
+	if os.Getenv("DEBUG") == "true" {
+		log.Printf("[chromedpdrv] "+msg, args...)
+	}
 }
 
 // getAttr liest ein Attribut direkt aus dem CDP-Node (Attribute-Liste: [name, value, name, value, ...])
@@ -494,7 +497,6 @@ func (d *Driver) ConfirmBooking(ctx context.Context) error {
 	d.logf("ConfirmBooking: Termin bestätigt.")
 	return nil
 }
-
 
 func (d *Driver) dumpFormMap(form map[string]string) string {
 	b, _ := json.Marshal(form)

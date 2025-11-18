@@ -26,21 +26,29 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if b, e := json.MarshalIndent(req, "", "  "); e == nil {
-		log.Printf("TUI fertig, BookingRequest:\n%s\n", string(b))
-	} else {
-		log.Printf("TUI fertig, BookingRequest: %+v\n", req)
+	if os.Getenv("DEBUG") == "true" {
+		if b, e := json.MarshalIndent(req, "", "  "); e == nil {
+			log.Printf("TUI fertig, BookingRequest:\n%s\n", string(b))
+		} else {
+			log.Printf("TUI fertig, BookingRequest: %+v\n", req)
+		}
 	}
 
 	loc, _ := time.LoadLocation(req.TZ)
-	drv, err := drvcdp.NewDriver(cfg.Headless, loc)
+
+	runHeadless := cfg.Headless
+	if os.Getenv("DEBUG") == "true" {
+		runHeadless = false
+	}
+
+	drv, err := drvcdp.NewDriver(runHeadless, loc)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	wcfg := watcher.Config{
 		BaseURL:    cfg.BaseURL,
-		Headless:   cfg.Headless,
+		Headless:   runHeadless,
 		PollMinSec: cfg.PollMin,
 		PollMaxSec: cfg.PollMax,
 	}
