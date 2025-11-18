@@ -15,11 +15,14 @@ const XpTimeButtons = `//button[normalize-space(.) and not(@disabled)] | //a[nor
 
 // Formularfelder (neue Struktur)
 const (
-	XpInputName         = `//span[contains(., 'Nachname, Vorname')]/ancestor::label//input`
-	XpInputEmail        = `//span[contains(., 'E-Mail-Adresse')]/ancestor::label//input`
-	XpInputPhone        = `//span[contains(., 'Handy/Telefon')]/ancestor::label//input`
-	XpCheckboxPrivacy   = `label[for="IsTermsOfServiceConsentObtained"]` // Target the label for the checkbox
+	XpInputName       = `//span[contains(., 'Nachname, Vorname')]/ancestor::label//input`
+	XpInputEmail      = `//span[contains(., 'E-Mail-Adresse')]/ancestor::label//input`
+	XpInputPhone      = `//span[contains(., 'Handy/Telefon')]/ancestor::label//input`
+	XpCheckboxPrivacy = `label[for="IsTermsOfServiceConsentObtained"]` // Target the label for the checkbox
 )
 
-// Submit Button
-const XpSubmit = `//button[contains(normalize-space(.), 'Weiter')]` // Find by text
+// Submit Buttons
+const (
+	XpContinue       = `//button[contains(normalize-space(.), 'Weiter')]`
+	XpConfirmBooking = `//button[contains(normalize-space(.), 'Bestätigen')]`
+)

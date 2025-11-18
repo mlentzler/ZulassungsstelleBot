@@ -439,8 +439,8 @@ func (d *Driver) BookSlot(ctx context.Context, s browser.Slot, form map[string]s
 	return nil
 }
 
-func (d *Driver) FillFromMap(ctx context.Context, form map[string]string) error {
-	d.logf("FillFromMap: called")
+func (d *Driver) FillAndContinue(ctx context.Context, form map[string]string) error {
+	d.logf("FillAndContinue: called")
 	c := d.sess.Context()
 
 	// Formulardaten aus der Map extrahieren
@@ -462,20 +462,39 @@ func (d *Driver) FillFromMap(ctx context.Context, form map[string]string) error 
 		// Checkbox (Datenschutz/AGB)
 		chromedp.Click(XpCheckboxPrivacy, chromedp.ByQuery, chromedp.NodeVisible), // Use ByQuery for the label selector
 
-		// Submit („Weiter“/„Bestätigen“)
-		chromedp.WaitEnabled(XpSubmit, chromedp.BySearch), // Wait for the button to be enabled
-		chromedp.Click(XpSubmit, chromedp.BySearch),
-		chromedp.Sleep(500 * time.Millisecond),
+		// Submit („Weiter“)
+		chromedp.WaitEnabled(XpContinue, chromedp.BySearch), // Wait for the button to be enabled
+		chromedp.Click(XpContinue, chromedp.BySearch),
+		chromedp.Sleep(1000 * time.Millisecond), // Wait a bit longer for the next page
 	}
 
 	// Aktionen ausführen
 	if err := chromedp.Run(c, actions...); err != nil {
-		return fmt.Errorf("FillFromMap: %w", err)
+		return fmt.Errorf("FillAndContinue: %w", err)
 	}
 
-	d.logf("FillFromMap: Formular ausgefüllt und abgeschickt.")
+	d.logf("FillAndContinue: Formular ausgefüllt und abgeschickt.")
 	return nil
 }
+
+func (d *Driver) ConfirmBooking(ctx context.Context) error {
+	d.logf("ConfirmBooking: called")
+	c := d.sess.Context()
+
+	actions := []chromedp.Action{
+		chromedp.WaitEnabled(XpConfirmBooking, chromedp.BySearch),
+		chromedp.Click(XpConfirmBooking, chromedp.BySearch),
+		chromedp.Sleep(500 * time.Millisecond),
+	}
+
+	if err := chromedp.Run(c, actions...); err != nil {
+		return fmt.Errorf("ConfirmBooking: %w", err)
+	}
+
+	d.logf("ConfirmBooking: Termin bestätigt.")
+	return nil
+}
+
 
 func (d *Driver) dumpFormMap(form map[string]string) string {
 	b, _ := json.Marshal(form)

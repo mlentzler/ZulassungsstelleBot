@@ -74,10 +74,18 @@ func Run(ctx context.Context, drv browser.Driver, cfg Config, req domain.Booking
 			continue
 		}
 
-		if err := drv.FillFromMap(ctx, form); err != nil {
+		if err := drv.FillAndContinue(ctx, form); err != nil {
+			log.Printf("FillAndContinue failed: %v", err)
 			sleep(ctx, 3*time.Second)
 			continue
 		}
+
+		if err := drv.ConfirmBooking(ctx); err != nil {
+			log.Printf("ConfirmBooking failed: %v", err)
+			sleep(ctx, 3*time.Second)
+			continue
+		}
+
 		return nil
 	}
 }
