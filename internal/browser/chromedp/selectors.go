@@ -22,4 +22,4 @@ const (
 )
 
 // Submit Button
-const XpSubmit = `button#submit-btn` // Using ID for robustness
+const XpSubmit = `//button[contains(normalize-space(.), 'Weiter')]` // Find by text
