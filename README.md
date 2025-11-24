@@ -6,6 +6,8 @@ This bot automates the tedious process of repeatedly checking the website for an
 
 ## 🎥 Demo
 
+![](demo.gif)
+
 ---
 
 ## ✨ Features
