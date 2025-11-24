@@ -23,6 +23,19 @@ const (
 	stepDone
 )
 
+const (
+	carArt = "" +
+		"                         _.-=\"_-         _\n" +
+		"                         _.-=\"   _-          | ||\"\"\"\"\"\"\"---._______     __..\n" +
+		"             ___.===\"\"\"\"-.______-,,,,,,,,,,,,`-''----\" \"\"\"\"\"       \"\"\"\"\"  __'\n" +
+		"      __.--\"\"     __        ,'                   o \\           __        [__|\n" +
+		" __-\"\"=======.--\"\"  \"\"--.=================================.--\"\"  \"\"--.=======:\n" +
+		"]       [w] : /        \\ : |========================|    : /        \\ :  [w] :\n" +
+		"V___________:|          |: |========================|    :|          |:   _-\"\n" +
+		" V__________: \\        / :_|=======================/_____: \\        / :__-\"\n" +
+		" -----------'  \"-_____-\"  `-------------------------------'  \"-_____-\"\n"
+)
+
 type Model struct {
 	step step
 
@@ -103,22 +116,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
+	var s strings.Builder
+	s.WriteString(carArt)
+	s.WriteString("\n\n")
+
 	switch m.step {
 	case stepPerson:
-		return viewPerson(m)
+		s.WriteString(viewPerson(m))
 	case stepMenu:
-		return viewMenu(m)
+		s.WriteString(viewMenu(m))
 	case stepAvailabilityMode:
-		return viewAvailMode(m)
+		s.WriteString(viewAvailMode(m))
 	case stepAvailabilityDetail:
-		return viewAvailDetail(m)
+		s.WriteString(viewAvailDetail(m))
 	case stepReview:
-		return viewReview(m)
+		s.WriteString(viewReview(m))
 	case stepDone:
-		return "fertig\n"
-	default:
-		return ""
+		s.WriteString("fertig\n")
 	}
+	return s.String()
 }
 
 func updatePerson(m Model, msg tea.Msg) (tea.Model, tea.Cmd) {

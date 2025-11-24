@@ -11,6 +11,8 @@ import (
 )
 
 func Run(ctx context.Context, cfg config.Config) (domain.BookingRequest, error) {
+	fmt.Print("\033[H\033[2J") // Clear screen on start
+
 	root, err := config.LoadMenu(cfg.MenuPath)
 	if err != nil {
 		return domain.BookingRequest{}, fmt.Errorf("lade menu: %w", err)
