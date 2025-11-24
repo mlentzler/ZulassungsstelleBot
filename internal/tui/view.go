@@ -76,9 +76,9 @@ func viewAvailDetail(m Model) string {
 		}
 
 		s := "📅 Einmaliger Termin\n\n"
-		s += f0 + "Datum (YYYY-MM-DD): " + m.dateInput.View() + "\n\n"
-		s += f1 + "From Stunde (0-23): " + m.fromInput.View() + "\n\n"
-		s += f2 + "To   Stunde (1-24): " + m.toInput.View() + "\n\n"
+		s += f0 + "Datum (DD.MM.YYYY): " + m.dateInput.View() + "\n\n"
+		s += f1 + "Ab Stunde (0-23): " + m.fromInput.View() + "\n\n"
+		s += f2 + "Bis Stunde (1-24): " + m.toInput.View() + "\n\n"
 		if m.errMsg != "" {
 			s += "⚠️  " + m.errMsg + "\n\n"
 		}
